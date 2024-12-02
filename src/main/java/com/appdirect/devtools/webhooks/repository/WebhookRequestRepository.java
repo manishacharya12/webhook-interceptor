@@ -9,4 +9,6 @@ import org.springframework.data.jpa.repository.JpaRepository;
 public interface WebhookRequestRepository extends JpaRepository<WebhookRequest, Long> {
 
 	List<WebhookRequest> findBySessionId(long sessionId);
+
+	WebhookRequest findBySessionIdAndId(long sessionId, long webhookId);
 }

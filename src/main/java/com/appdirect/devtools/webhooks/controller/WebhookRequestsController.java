@@ -31,35 +31,46 @@ public class WebhookRequestsController {
 	private final SessionService sessionService;
 	private final WebhookRequestService webhookRequestService;
 
-	@GetMapping(path = {"/{uuid}/sessionrequests"}, produces = MediaType.APPLICATION_JSON_VALUE)
-	public ResponseEntity<List<WebhookRequestDto>> getAllWebhookRequestsBySessionUuid(@PathVariable String uuid) {
-		return ResponseEntity.ok(webhookRequestService.getAllWebhookRequestsBySessionUuid(uuid));
+	@GetMapping(path = {"/{sessionUuid}/sessionrequests"}, produces = MediaType.APPLICATION_JSON_VALUE)
+	public ResponseEntity<List<WebhookRequestDto>> getAllWebhookRequestsBySessionUuid(@PathVariable String sessionUuid) {
+		return ResponseEntity.ok(webhookRequestService.getAllWebhookRequestsBySessionUuid(sessionUuid));
 	}
 
-	@GetMapping(path = {"/{uuid}/requests/{id}"}, produces = MediaType.APPLICATION_JSON_VALUE)
-	public ResponseEntity<WebhookRequestDto> getWebhookRequestById(@PathVariable UUID uuid, @PathVariable long id) {
-		return ResponseEntity.ok(webhookRequestService.getWebhook(id));
+	@GetMapping(path = {"/{sessionUuid}/requests/{webhookId}"}, produces = MediaType.APPLICATION_JSON_VALUE)
+	public ResponseEntity<WebhookRequestDto> getWebhookRequestBySessionUuidAndWebhookId(@PathVariable String sessionUuid, @PathVariable long webhookId) {
+		return ResponseEntity.ok(webhookRequestService.getWebhookRequestBySessionUuidAndWebhookId(sessionUuid, webhookId));
 	}
 
-	@RequestMapping(path = {"/{uuid}/requests"}, produces = MediaType.APPLICATION_JSON_VALUE, consumes = MediaType.APPLICATION_JSON_VALUE)
+	@RequestMapping(path = {"/{sessionUuid}/requests"}, produces = MediaType.APPLICATION_JSON_VALUE, consumes = MediaType.APPLICATION_JSON_VALUE)
 	public ResponseEntity<WebhookRequestDto> createWebHookRequest(
 		final HttpServletRequest request,
-		@PathVariable String uuid,
+		@PathVariable String sessionUuid,
 		@RequestBody(required=false) String eventBody,
 		@RequestParam(required=false) Map<String, String> queryParams,
-		@RequestHeader(required=false) Map<String, String> headers) throws JsonProcessingException {
+		@RequestHeader(required=false) Map<String, String> headers) {
 
-		long sessionId = sessionService.getSessionByUUID(uuid).getId();
+		long sessionId = sessionService.getSessionByUUID(sessionUuid).getId();
 		WebhookRequestDto builtWebhookRequestDto = WebhookRequestDto.builder()
 			.sessionId(sessionId)
 			.headers(headers)
 			.queryParams(queryParams)
 			.httpMethod(request.getMethod())
 			.requestUrl(request.getRequestURL().toString())
-			.payload(eventBody)
-			.payloadSizeInBytes(eventBody.getBytes().length)
 			.callerHost(request.getRemoteAddr())
 			.build();
+
+		if(eventBody != null && !eventBody.isEmpty()) {
+			builtWebhookRequestDto = builtWebhookRequestDto.toBuilder()
+				.payload(eventBody)
+				.payloadSizeInBytes(eventBody.getBytes().length)
+				.build();
+		}
+		else {
+			builtWebhookRequestDto = builtWebhookRequestDto.toBuilder()
+				.payloadSizeInBytes(0L)
+				.build();
+		}
+
 		WebhookRequestDto newWebhookRequest = webhookRequestService.createWebhookRequest(builtWebhookRequestDto);
 		return ResponseEntity.created(URI.create("/" + newWebhookRequest.getId() + "/")).body(newWebhookRequest);
 	}

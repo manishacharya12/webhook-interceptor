@@ -25,12 +25,13 @@ public class WebhookRequestService {
 		return mapper.toWebhookRequestDtos(webhookRequestRepository.findBySessionId(sessionId));
 	}
 
-	public WebhookRequestDto getWebhook(long id) {
-		WebhookRequest webhookRequest = webhookRequestRepository.findById(id).orElse(null);
+	public WebhookRequestDto getWebhookRequestBySessionUuidAndWebhookId(String sessionUuid, long webhookId) {
+		long sessionId = sessionService.getSessionByUUID(sessionUuid).getId();
+		WebhookRequest webhookRequest = webhookRequestRepository.findBySessionIdAndId(sessionId, webhookId);
 		return mapper.toWebhookRequestDto(webhookRequest);
 	}
 
-	public WebhookRequestDto createWebhookRequest(WebhookRequestDto webhookRequestDto) throws JsonProcessingException {
+	public WebhookRequestDto createWebhookRequest(WebhookRequestDto webhookRequestDto) {
 		WebhookRequest newWebhookRequest = webhookRequestRepository.save(mapper.toWebhookRequest(webhookRequestDto));
 		return mapper.toWebhookRequestDto(newWebhookRequest);
 	}
