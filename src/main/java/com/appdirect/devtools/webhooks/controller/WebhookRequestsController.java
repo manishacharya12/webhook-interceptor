@@ -43,6 +43,11 @@ public class WebhookRequestsController {
 		return ResponseEntity.ok(webhookRequestService.getWebhookRequestBySessionUuidAndWebhookId(sessionUuid, webhookId));
 	}
 
+	@GetMapping(path = {"/{sessionUuid}/requests/uuid/{webhookUuid}"}, produces = MediaType.APPLICATION_JSON_VALUE)
+	public ResponseEntity<WebhookRequestDto> getWebhookRequestBySessionUuidAndWebhookUuid(@PathVariable String sessionUuid, @PathVariable String webhookUuid) {
+		return ResponseEntity.ok(webhookRequestService.getWebhookRequestBySessionUuidAndWebhookUuid(sessionUuid, webhookUuid));
+	}
+
 	@RequestMapping(path = {"/{sessionUuid}/requests"}, produces = MediaType.APPLICATION_JSON_VALUE, consumes = MediaType.APPLICATION_JSON_VALUE)
 	public ResponseEntity<WebhookRequestDto> createWebHookRequest(
 		final HttpServletRequest request,

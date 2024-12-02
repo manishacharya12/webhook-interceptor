@@ -1,6 +1,7 @@
 package com.appdirect.devtools.webhooks.service;
 
 import java.util.List;
+import java.util.UUID;
 
 import lombok.RequiredArgsConstructor;
 
@@ -28,6 +29,12 @@ public class WebhookRequestService {
 	public WebhookRequestDto getWebhookRequestBySessionUuidAndWebhookId(String sessionUuid, long webhookId) {
 		long sessionId = sessionService.getSessionByUUID(sessionUuid).getId();
 		WebhookRequest webhookRequest = webhookRequestRepository.findBySessionIdAndId(sessionId, webhookId);
+		return mapper.toWebhookRequestDto(webhookRequest);
+	}
+
+	public WebhookRequestDto getWebhookRequestBySessionUuidAndWebhookUuid(String sessionUuid, String webhookUuid) {
+		long sessionId = sessionService.getSessionByUUID(sessionUuid).getId();
+		WebhookRequest webhookRequest = webhookRequestRepository.findBySessionIdAndUuid(sessionId, UUID.fromString(webhookUuid));
 		return mapper.toWebhookRequestDto(webhookRequest);
 	}
 
