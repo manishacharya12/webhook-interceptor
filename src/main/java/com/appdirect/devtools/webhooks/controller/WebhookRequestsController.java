@@ -1,6 +1,8 @@
 package com.appdirect.devtools.webhooks.controller;
 
 import java.net.URI;
+import java.time.ZoneId;
+import java.time.ZonedDateTime;
 import java.util.List;
 import java.util.Map;
 import java.util.UUID;
@@ -50,13 +52,17 @@ public class WebhookRequestsController {
 		@RequestHeader(required=false) Map<String, String> headers) {
 
 		long sessionId = sessionService.getSessionByUUID(sessionUuid).getId();
+		UUID generatedUuid = UUID.randomUUID();
+		ZonedDateTime creationTime = ZonedDateTime.now(ZoneId.of("UTC"));
 		WebhookRequestDto builtWebhookRequestDto = WebhookRequestDto.builder()
 			.sessionId(sessionId)
+			.uuid(generatedUuid)
 			.headers(headers)
 			.queryParams(queryParams)
 			.httpMethod(request.getMethod())
 			.requestUrl(request.getRequestURL().toString())
 			.callerHost(request.getRemoteAddr())
+			.createdOn(creationTime)
 			.build();
 
 		if(eventBody != null && !eventBody.isEmpty()) {

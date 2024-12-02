@@ -24,10 +24,10 @@ public class SessionMapper {
 	public SessionDto toSessionDto(Session session) {
 		return Optional.ofNullable(session)
 			.map(s -> SessionDto.builder()
-				.id(session.getId())
-				.uuid(session.getUuid())
-				.createdOn(session.getCreatedOn())
-				.expiry(session.getExpiry())
+				.id(s.getId())
+				.uuid(s.getUuid())
+				.createdOn(s.getCreatedOn())
+				.expiry(s.getExpiry())
 				.build())
 			.orElse(null);
 	}

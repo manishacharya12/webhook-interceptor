@@ -1,5 +1,8 @@
 package com.appdirect.devtools.webhooks.entity;
 
+import java.time.ZonedDateTime;
+import java.util.UUID;
+
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
@@ -25,6 +28,9 @@ public class WebhookRequest {
 	private long id;
 
 	@Column
+	private UUID uuid;
+
+	@Column
 	private long sessionId;
 
 	@Column(columnDefinition = "text")
@@ -47,4 +53,7 @@ public class WebhookRequest {
 
 	@Column(columnDefinition = "varchar(30)")
 	private String callerHost;
+
+	@Column
+	private ZonedDateTime createdOn;
 }

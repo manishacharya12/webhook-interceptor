@@ -1,6 +1,8 @@
 package com.appdirect.devtools.webhooks.dto;
 
+import java.time.ZonedDateTime;
 import java.util.Map;
+import java.util.UUID;
 
 import lombok.AllArgsConstructor;
 import lombok.Builder;
@@ -16,6 +18,7 @@ import lombok.Setter;
 public class WebhookRequestDto {
 
 		private long id;
+		private UUID uuid;
 		private long sessionId;
 		private Map<String, String> headers;
 		private Map<String, String> queryParams;
@@ -24,4 +27,5 @@ public class WebhookRequestDto {
 		private String payload;
 		private long payloadSizeInBytes;
 		private String callerHost;
+		private ZonedDateTime createdOn;
 }

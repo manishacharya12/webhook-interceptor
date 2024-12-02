@@ -23,6 +23,7 @@ public class WebhookRequestMapper {
 		try {
 			return WebhookRequest.builder()
 				.id(webhookRequestDto.getId())
+				.uuid(webhookRequestDto.getUuid())
 				.sessionId(webhookRequestDto.getSessionId())
 				.headers(new ObjectMapper().writeValueAsString(webhookRequestDto.getHeaders()))
 				.queryParams(new ObjectMapper().writeValueAsString(webhookRequestDto.getQueryParams()))
@@ -31,6 +32,7 @@ public class WebhookRequestMapper {
 				.payload(webhookRequestDto.getPayload())
 				.payloadSizeInBytes(webhookRequestDto.getPayloadSizeInBytes())
 				.callerHost(webhookRequestDto.getCallerHost())
+				.createdOn(webhookRequestDto.getCreatedOn())
 				.build();
 		} catch (JsonProcessingException e) {
 			log.error("JSON parsing exception while parsing headers or queryParams");
@@ -44,15 +46,17 @@ public class WebhookRequestMapper {
 				.map(whr -> {
 					try {
 						return WebhookRequestDto.builder()
-							.id(webhookRequest.getId())
-							.sessionId(webhookRequest.getSessionId())
-							.headers(new ObjectMapper().readValue(webhookRequest.getHeaders(), new TypeReference<>() {}))
-							.queryParams(new ObjectMapper().readValue(webhookRequest.getQueryParams(), new TypeReference<>() {}))
-							.httpMethod(webhookRequest.getHttpMethod())
-							.requestUrl(webhookRequest.getRequestUrl())
-							.payload(webhookRequest.getPayload())
-							.payloadSizeInBytes(webhookRequest.getPayloadSizeInBytes())
-							.callerHost(webhookRequest.getCallerHost())
+							.id(whr.getId())
+							.uuid(whr.getUuid())
+							.sessionId(whr.getSessionId())
+							.headers(new ObjectMapper().readValue(whr.getHeaders(), new TypeReference<>() {}))
+							.queryParams(new ObjectMapper().readValue(whr.getQueryParams(), new TypeReference<>() {}))
+							.httpMethod(whr.getHttpMethod())
+							.requestUrl(whr.getRequestUrl())
+							.payload(whr.getPayload())
+							.payloadSizeInBytes(whr.getPayloadSizeInBytes())
+							.callerHost(whr.getCallerHost())
+							.createdOn(whr.getCreatedOn())
 							.build();
 					} catch (JsonProcessingException e) {
 						log.error("JSON parsing exception while parsing headers or queryParams");
