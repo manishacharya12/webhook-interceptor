@@ -1,20 +1,15 @@
 package com.appdirect.devtools.webhooks.entity;
 
-import java.util.Map;
-
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
-import jakarta.persistence.CollectionTable;
 import jakarta.persistence.Column;
-import jakarta.persistence.ElementCollection;
 import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
-import jakarta.persistence.MapKeyColumn;
 import jakarta.persistence.Table;
 
 @Entity
@@ -34,8 +29,22 @@ public class WebhookRequest {
 
 	@Column(columnDefinition = "text")
 	private String headers;
-	// private Map<String, String> queryParams;
 
 	@Column(columnDefinition = "text")
-	private String content;
+	private String queryParams;
+
+	@Column(columnDefinition = "varchar(6)")
+	private String httpMethod;
+
+	@Column(columnDefinition = "varchar(2048)")
+	private String requestUrl;
+
+	@Column
+	private long payloadSizeInBytes;
+
+	@Column(columnDefinition = "text")
+	private String payload;
+
+	@Column(columnDefinition = "varchar(30)")
+	private String callerHost;
 }

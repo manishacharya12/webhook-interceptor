@@ -38,7 +38,7 @@ public class SessionController {
 		return ResponseEntity.ok(sessionService.getSessionById(id));
 	}
 
-	@GetMapping(path = {"/{uuid}"}, produces = MediaType.APPLICATION_JSON_VALUE)
+	@GetMapping(path = {"/uuid/{uuid}"}, produces = MediaType.APPLICATION_JSON_VALUE)
 	public ResponseEntity<SessionDto> getSessionByUUID(@PathVariable String uuid) {
 		return ResponseEntity.ok(sessionService.getSessionByUUID(uuid));
 	}

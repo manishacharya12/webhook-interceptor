@@ -20,6 +20,7 @@ import org.springframework.web.bind.annotation.RestController;
 import com.appdirect.devtools.webhooks.dto.WebhookRequestDto;
 import com.appdirect.devtools.webhooks.service.SessionService;
 import com.appdirect.devtools.webhooks.service.WebhookRequestService;
+import com.fasterxml.jackson.core.JsonProcessingException;
 import jakarta.servlet.http.HttpServletRequest;
 
 @RestController
@@ -31,12 +32,12 @@ public class WebhookRequestsController {
 	private final WebhookRequestService webhookRequestService;
 
 	@GetMapping(path = {"/{uuid}/sessionrequests"}, produces = MediaType.APPLICATION_JSON_VALUE)
-	public ResponseEntity<List<WebhookRequestDto>> getAllWebhookRequests(@PathVariable String uuid) {
-		return ResponseEntity.ok(webhookRequestService.getAllWebhookRequests(uuid));
+	public ResponseEntity<List<WebhookRequestDto>> getAllWebhookRequestsBySessionUuid(@PathVariable String uuid) {
+		return ResponseEntity.ok(webhookRequestService.getAllWebhookRequestsBySessionUuid(uuid));
 	}
 
 	@GetMapping(path = {"/{uuid}/requests/{id}"}, produces = MediaType.APPLICATION_JSON_VALUE)
-	public ResponseEntity<WebhookRequestDto> getWebhookRequest(@PathVariable UUID uuid, @PathVariable long id) {
+	public ResponseEntity<WebhookRequestDto> getWebhookRequestById(@PathVariable UUID uuid, @PathVariable long id) {
 		return ResponseEntity.ok(webhookRequestService.getWebhook(id));
 	}
 
@@ -45,19 +46,19 @@ public class WebhookRequestsController {
 		final HttpServletRequest request,
 		@PathVariable String uuid,
 		@RequestBody(required=false) String eventBody,
-		@RequestParam(required=false) Map<String, String> queryParam,
-		@RequestHeader(required=false) Map<String, String> headers) {
+		@RequestParam(required=false) Map<String, String> queryParams,
+		@RequestHeader(required=false) Map<String, String> headers) throws JsonProcessingException {
 
-		System.out.println(request.getMethod());
-		System.out.println(request.getRemoteAddr());
-		System.out.println("url " + request.getRequestURL());
-		System.out.println("uri " + request.getRequestURI());
-		System.out.println(eventBody.getBytes().length);
-
-		long sessionId = sessionService.getSessionByUUID(uuid).getId(); // resolve id from session uuid
+		long sessionId = sessionService.getSessionByUUID(uuid).getId();
 		WebhookRequestDto builtWebhookRequestDto = WebhookRequestDto.builder()
 			.sessionId(sessionId)
-			.content(eventBody)
+			.headers(headers)
+			.queryParams(queryParams)
+			.httpMethod(request.getMethod())
+			.requestUrl(request.getRequestURL().toString())
+			.payload(eventBody)
+			.payloadSizeInBytes(eventBody.getBytes().length)
+			.callerHost(request.getRemoteAddr())
 			.build();
 		WebhookRequestDto newWebhookRequest = webhookRequestService.createWebhookRequest(builtWebhookRequestDto);
 		return ResponseEntity.created(URI.create("/" + newWebhookRequest.getId() + "/")).body(newWebhookRequest);
